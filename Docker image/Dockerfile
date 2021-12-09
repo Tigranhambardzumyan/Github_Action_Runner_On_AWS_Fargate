@@ -1,6 +1,7 @@
 FROM ubuntu:20.04
 
 ENV RUNNER_LABELS ""
+ENV AWS_REGION ""
 ENV RUNNER_ALLOW_RUNASROOT=true
 ENV DEBIAN_FRONTEND=noninteractive
 RUN echo "APT::Get::Assume-Yes \"true\";" > /etc/apt/apt.conf.d/90assumeyes

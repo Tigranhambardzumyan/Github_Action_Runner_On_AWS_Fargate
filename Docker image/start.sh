@@ -8,9 +8,9 @@ sleep 5
 curl -Ls https://github.com/actions/runner/releases/download/v${GITHUB_RUNNER_VERSION}/actions-runner-linux-x64-${GITHUB_RUNNER_VERSION}.tar.gz | tar -zx
 sleep 5
 
-PAT=$(aws secretsmanager get-secret-value --secret-id PAT --region eu-central-1 --query SecretString --output text | jq -r '.PAT')
-owner=$(aws secretsmanager get-secret-value --secret-id owner --region eu-central-1 --query SecretString --output text | jq -r '.owner')
-repo=$(aws secretsmanager get-secret-value --secret-id repo --region eu-central-1 --query SecretString --output text | jq -r '.repo')
+PAT=$(aws secretsmanager get-secret-value --secret-id PAT --region ${AWS_REGION} --query SecretString --output text | jq -r '.PAT')
+owner=$(aws secretsmanager get-secret-value --secret-id owner --region ${AWS_REGION} --query SecretString --output text | jq -r '.owner')
+repo=$(aws secretsmanager get-secret-value --secret-id repo --region ${AWS_REGION} --query SecretString --output text | jq -r '.repo')
 
 token=$(curl -s -XPOST \
     -H "authorization: token ${PAT}" \
