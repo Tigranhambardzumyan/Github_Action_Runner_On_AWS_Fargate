@@ -1,0 +1,58 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  PAT:
+    Description: Set the Github Personal Access Token
+    Type: String
+  OWNER:
+    Description: Set the Github Repository Owner Name
+    Type: String
+  REPO:
+    Description: Set the Github Repository Name
+    Type: String    
+  Subnets:
+    Description: The Subnet will be attached to Fargate instance
+    Type: List<AWS::EC2::Subnet::Id>
+  SecurityGroups:
+    Description: The Security Group will be attached to Fargate instance
+    Type: List<AWS::EC2::SecurityGroup::Id>      
+
+
+Resources:
+  SecretManager1:
+    Type: AWS::SecretsManager::Secret
+    Properties: 
+      Description: Github Personal Access Token
+      Name: PAT
+      SecretString: !Sub 
+      - '{"Key": "PAT","Value": "${pat}"}'
+      - { pat: !Ref PAT }
+  SecretManager2:
+    Type: AWS::SecretsManager::Secret
+    Properties: 
+      Description: Github Personal Access Token
+      Name: owner
+      SecretString: !Sub 
+      - '{"Key": "PAT","Value": "${owner}"}'
+      - { owner: !Ref OWNER }
+  SecretManager3:
+    Type: AWS::SecretsManager::Secret
+    Properties: 
+      Description: Github Personal Access Token
+      Name: repo
+      SecretString: !Sub 
+      - '{"Key": "PAT","Value": "${repo}"}'
+      - { repo: !Ref REPO }      
+  
+  SSMParameter1:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: fargate_subnet
+      Type: String
+      Value: !Select [ 0, !Ref SecurityGroups ]
+  SSMParameter2:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: fargate_sg
+      Type: String
+      Value: !Select [ 0, !Ref Subnets ]
+   
