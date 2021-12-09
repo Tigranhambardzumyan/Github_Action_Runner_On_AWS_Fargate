@@ -14,7 +14,10 @@ Parameters:
     Type: List<AWS::EC2::Subnet::Id>
   SecurityGroups:
     Description: The Security Group will be attached to Fargate instance
-    Type: List<AWS::EC2::SecurityGroup::Id>      
+    Type: List<AWS::EC2::SecurityGroup::Id>    
+  EKRImage:
+    Description: Set The Docker image ID
+    Type: String      
 
 
 Resources:
@@ -55,4 +58,56 @@ Resources:
       Name: fargate_sg
       Type: String
       Value: !Select [ 0, !Ref Subnets ]
-   
+
+  CreateTaskDefinition:    
+    Type: AWS::ECS::TaskDefinition
+    Properties: 
+      RequiresCompatibilities:
+        - "FARGATE"
+      ContainerDefinitions: 
+        - 
+          Name: "Github-Runner"
+          Image: !Ref EKRImage
+          Environment: 
+            - Name: AWS_REGION
+              Value: default
+            - Name: RUNNER_LABELS
+              Value: default
+      Cpu: 2 vCPU
+      ExecutionRoleArn: !Ref AccessToSecretManagerFromECSTask
+      Memory: 7 GB
+      # RequiresCompatibilities: 
+      NetworkMode: awsvpc
+      RuntimePlatform: 
+          CpuArchitecture: X86_64
+          OperatingSystemFamily: LINUX
+      TaskRoleArn: !Ref AccessToSecretManagerFromECSTask
+
+  AccessToSecretManagerFromECSTask: 
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ecs.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      Policies:
+        - PolicyName: AllowfromECSToSecurityParamaters
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: 
+                  - secretsmanager:GetResourcePolicy
+                  - secretsmanager:GetSecretValue
+                  - secretsmanager:DescribeSecret
+                  - secretsmanager:ListSecretVersionIds
+                Resource: 
+                  - !Ref SecretManager1
+                  - !Ref SecretManager2
+                  - !Ref SecretManager3                                 
