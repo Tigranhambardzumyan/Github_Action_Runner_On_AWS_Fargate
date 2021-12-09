@@ -21,7 +21,7 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
     
       - name: start Fargate
-        run: aws ecs run-task --cluster cluster --task-definition task:4 --count 1 --network-configuration "awsvpcConfiguration={subnets=[subnet-087e20ba48b8b9722],securityGroups=[sg-02a9e9ed68fca1110],assignPublicIp=ENABLED}" --launch-type FARGATE --override '{"containerOverrides":[{"name":"Github-Runner","environment":[{"name":"RUNNER_LABELS","value":"${{github.sha}}"}]}]}'
+        run: aws ecs run-task --cluster cluster --task-definition task:5 --count 1 --network-configuration "awsvpcConfiguration={subnets=[subnet-087e20ba48b8b9722],securityGroups=[sg-02a9e9ed68fca1110],assignPublicIp=ENABLED}" --launch-type FARGATE --override '{"containerOverrides":[{"name":"Github-Runner","environment":[{"name":"RUNNER_LABELS","value":"${{github.sha}}"},{"name":"AWS_REGION","value":"${{secrets.AWS_REGION}}"}]}]}'
 
 
   run-self-hosted:
